@@ -1,0 +1,93 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{%block content%}
+	<div class="checkout">
+		{%if not user.is_authenticated or shipping%}
+		<form class="box-element checkout-form" id="checkout-form" method="POST" data-processOrderUrl="{%url 'store:process_order'%}">
+			{%if not user.is_authenticated%}
+			{%csrf_token%}
+			<div>
+				<input type="text" name="name" placeholder="Name.." required>
+				<input type="email" name="email" placeholder="Email.." required>
+			</div>
+			<hr class="separator">
+			{%endif%}
+			{%if shipping%}
+			<p>Shipping information:</p>
+			<hr class="separator">
+			<div>
+				<input type="text" name="address" placeholder="Address.." required>
+				<input type="text" name="city" placeholder="City.." required>
+			</div>
+			<hr class="separator">
+			<div>
+				<input type="text" name="state" placeholder="State.." required>
+				<input type="text" name="zipcode" placeholder="Zip Code.." required>
+			</div>
+			<hr class="separator">
+			{%endif%}
+			<input id="submit-btn" type="submit" value="Continue" class="btn green-btn">
+		</form>
+		{%endif%}
+		<div id="payment-info" class="box-element" {%if not user.is_authenticated or shipping%}hidden{%endif%}>
+			<small>Paypal Options</small>
+			<button id="make-payment">Make Payment</button>
+		</div>
+
+		<div class="box-element order-summary">
+			<div>
+				<a href="{%url 'store:cart'%}" class="btn gray-btn">&#x2190 Back to Cart</a>
+			</div>
+			<hr class="separator">
+			<h3>Order Summary</h3>
+			<hr class="separator">
+			<table class="items-table">
+				<tbody>
+				{%for item in items%}
+                <tr>
+                    <td>
+                        <img src="{% static item.image %}" alt="Product image" class="row-img">
+                    </td>
+                    <td>{{item.name}}</td>
+                    <td>${{item.price|floatformat:2}}</td>
+                    <td>{{item.quantity}}</td>
+                    <td>${{item.total}}</td>
+                </tr>
+                {%endfor%}
+				</tbody>
+			</table>
+			<hr class="separator">
+			<p class="special-text">Items: {{cart_items}}</p>
+			<p class="special-text">Total: ${{cart_total|floatformat:2}}</p>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var form = document.forms['checkout-form'];
+		form.addEventListener('submit', function(e) {
+			e.preventDefault()
+			document.getElementById('submit-btn').style.display = 'none';
+			document.getElementById('payment-info').removeAttribute('hidden');
+		})
+
+		document.getElementById('make-payment').addEventListener('click', function(e){
+			submitFormData(e)
+		})
+		function submitFormData(e){
+			var formData = new FormData(form);
+			jsonObject = {};
+			for (const [key, value]  of formData) {
+				jsonObject[key] = value;
+			}
+			var url = '/process_order/'
+			fetch(url, {
+				method: 'POST', 
+				headers: {
+					'X-CSRFToken': csrftoken
+				},
+				body: JSON.stringify(jsonObject)
+			})
+			.then((response) => response.json())
+			.then((data) => console.log('hi'))
+		}
+	</script>
+{%endblock content%}

@@ -1,0 +1,20 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{%block content%}
+    <section class="products">
+        {% for product in products%}
+        <div class="product-card box-element">
+            <img class="product-img" src="{%static product.image%}">
+            <h3 class="product-name">{{product.name}}</h3>
+            <hr class="separator">
+            <div>
+                <div>
+                    <button data-product={{product.id}} data-action="add" class="btn gray-btn update-cart">Add to Cart</button>
+                    <a href="" class="btn green-btn">View</a>
+                </div>
+                <span class="special-text">${{product.price|floatformat:2}}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+{%endblock content%}

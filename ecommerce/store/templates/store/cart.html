@@ -1,0 +1,48 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{%block content%}
+    <section class="cart">
+        <header class="box-element">
+            <a href="{%url 'store:store'%}" class="btn gray-btn">&#x2190 Continue Shopping</a>
+            <hr class="separator">
+            <div>
+                <p class="special-text">Items: <span class="cart-items">{{cart_items}}</span>
+                </p>
+                <p class="special-text">Total: $<span class="total-price">
+                    {{cart_total|floatformat:2}}</span>
+                </p>
+                <a href="{%url 'store:checkout' %}" class="btn green-btn">Checkout</a>
+            </div>
+        </header> 
+        <table class="box-element items-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr id="{{item.product.id}}">
+                    <td>
+                        <img src="{% static item.image %}" alt="Product image" class="row-img">
+                    </td>
+                    <td>{{item.name}}</td>
+                    <td>${{item.price|floatformat:2}}</td>
+                    <td class="quantity-column">
+                        <span data-product="{{item.product.id}}" data-action="add" class="up-arrow update-cart"></span>
+                        <span class="quantity">{{item.quantity}}</span>
+                        <span data-product="{{item.product.id}}" data-action="remove" class="down-arrow update-cart"></span>
+                    </td>
+                    <td>
+                        $<span class="item-total">{{item.total|floatformat:2}}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{%endblock content%}
